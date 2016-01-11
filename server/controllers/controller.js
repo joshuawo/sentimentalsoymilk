@@ -170,6 +170,8 @@ module.exports = {
     .then(function(trip){
       fullActivities.name = trip.name;
       fullActivities.destination = trip.destination;
+      fullActivities.image = trip.image;
+      fullActivities._id = trip._id
       var activityLength = trip.activities.length;
       trip.activities.forEach(function(tripId){
         TripItems.findById({ _id: tripId }, function(err, trip) {

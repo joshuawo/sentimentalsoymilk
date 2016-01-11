@@ -71,8 +71,10 @@ module.exports = {
       }
     });
   },
+
   findUser: function(req, res, next) {
     var username = req.url.split('/')[3]
+    console.log("UserID in FindUser",username)
     User.findOne({username:username},function(err, result){
       if (err) {
         console.log("Error finding username:", err);
@@ -83,37 +85,37 @@ module.exports = {
     });
   },
 
-  findAllUserTrips: function(req, res, next) {
-    console.log("userID", req);
-    var userId = req.url.split('/')[4];
-    var myTrips = [];
-    User.findById({ _id: userId }, function(err, user) {
-      if (err) { 
-        console.log("findById error", err)
-        return err; 
-      } else {
-        console.log("findbyID Results", trip);
-        return user;
-      }
-    })
-    .then(function(user){
-      var tripLength = user.trips.length;
-      user.trips.forEach(function(tripId){
-        Trips.findById({ _id: tripId }, function(err, trip) {
-          if (err) {
-            console.log("Error finding Trips by tripId", err)
-          } else {
-            console.log("Found trip", trip)
-            myTrips.push(trip);
-            if(tripLength === myTrips.length){
-              console.log("myTrip:", myTrips)
-              res.send(myTrips);
-            } 
-          }
-        });
-      });
-    });
-  },
+  // findAllUserTrips: function(req, res, next) {
+  //   console.log("userID", req);
+  //   var userId = req.url.split('/')[4];
+  //   var myTrips = [];
+  //   User.findById({ _id: userId }, function(err, user) {
+  //     if (err) { 
+  //       console.log("findById error", err)
+  //       return err; 
+  //     } else {
+  //       console.log("findbyID Results", trip);
+  //       return user;
+  //     }
+  //   })
+  //   .then(function(user){
+  //     var tripLength = user.trips.length;
+  //     user.trips.forEach(function(tripId){
+  //       Trips.findById({ _id: tripId }, function(err, trip) {
+  //         if (err) {
+  //           console.log("Error finding Trips by tripId", err)
+  //         } else {
+  //           console.log("Found trip", trip)
+  //           myTrips.push(trip);
+  //           if(tripLength === myTrips.length){
+  //             console.log("myTrip:", myTrips)
+  //             res.send(myTrips);
+  //           } 
+  //         }
+  //       });
+  //     });
+  //   });
+  // },
 
   // findOneUserTrip): function(req, res, next) {
   // },
@@ -142,7 +144,14 @@ module.exports = {
 
 
   logout : function(req, res, next) {
-    req.logout();
+    req.session.destroy(function(err){
+      if(err){
+        console.log(err);
+      } else {
+        var result = "User Logged Out"
+        res.send(result);
+      }
+    });
   }
 };
 

@@ -2,10 +2,8 @@
 //  This controller applies to the createTrip.html
 angular.module('app.create', ['app.services'])
 
-//  Factory functions are loaded in in 'ActivitiesData' from 'app.services'
-.controller('CreateTripController', function ($scope, $http, ActivitiesData) {
-  
-  // $scope.formCompleted is a variable to determine if the form is completed
+.controller('CreateTripController', function ($scope, $http, ActivitiesData, Auth) {
+  // variable to determine if the form is completed
   // if it's false, the form with show
   // if true, the form will hide and the right side of page will populate
   $scope.formCompleted = false;

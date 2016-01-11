@@ -4,8 +4,10 @@ angular.module('app.services',[])
 
 // Include ActivitiesData in controller paramters to access these factory
 // functions
-.factory('ActivitiesData', function($http, $location){
   // data stores all of the service functions
+
+.factory('ActivitiesData', function($http, $location, Auth){
+
   var data = {};
   data.searchedCity = {};
   data.cityCache = {};
@@ -88,8 +90,20 @@ angular.module('app.services',[])
   data.createTrip = function(tripData){
     //tripData is a JSON object
     $http.post('/trips', tripData)
+    .then(function(result){
+      console.log("Trip Created", result);
+      return result.data._id;
+      // $location.path('/myTrips');
+    })
+    .then(function(result){
+      console.log("_id", result)
+      var trip = { trips: [result] };
+      console.log("trip", trip)
+      return $http.put('/api/user/'+ Auth.user._id, trip, function(result){
+        console.log("Put result", result)
+      })
+    })
     .then(function(){
-      console.log("Trip Created");
       $location.path('/myTrips');
     })
     .catch(function(err){
@@ -124,6 +138,7 @@ angular.module('app.services',[])
   var auth = {};
   auth.user = { password : '' };
   auth.pass = '';
+  auth.cachedTrips = [];
 
   auth.clearPassword = function() {
     auth.user.password = '';
@@ -150,6 +165,14 @@ angular.module('app.services',[])
       })
   };
 
+  auth.logout = function() {
+    return $http.get('/logout')
+    .then(function(){
+      auth.user = { password : '' };
+      $location.path("/");
+    })
+  },
+
   auth.signup = function(userData) {
     auth.pass = userData.password;
     return $http.post('/api/signup', userData)
@@ -173,6 +196,25 @@ angular.module('app.services',[])
       auth.user = result.data;
     })
   };
+
+  auth.getUsersTrips = function(callback) {
+    console.log("Result from getUserTrips GET", auth.user)
+    user = auth.user;
+    var cache = [];
+    var tripLength = user.trips.length;
+    user.trips.forEach(function(tripId){
+      $http.get('/trips/'+ tripId)
+        .then(function(result){    
+          console.log("Found trip", result.data)
+          console.log('cache',cache)
+          cache.push(result.data);
+          if(tripLength === cache.length){
+            console.log("myTrip:", cache)
+            callback(cache);
+          } 
+        });
+    });
+  }
 
   return auth;
 });

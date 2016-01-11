@@ -16,15 +16,20 @@ module.exports = function(app, express) {
  //###### Live but not used in production############
   app.get('/api/user/*', userController.findUser);
   app.put('/api/user/*', userController.addTrips);
-  app.get('/api/user/trips/*', userController.findAllUserTrips);
 
   
   //############Pending Routes#####################
+  // app.get('/api/user/trips/*', userController.findAllUserTrips);
   // app.get('/api/user/*/*', userController.findOneUserTrip);
-  //app.get('/user', controller.checkAuth);
+  // app.get('/user', controller.checkAuth);
   // app.get('/activities/*', controller.fetchCityData);
-  // app.get('/db/activities', dbController.retrieveActivities);
-  // app.post('/db/activities', dbController.storeActivities);
+
+  app.get('/activities/*', controller.searchStoredData, controller.fetchCityData);
+
+
+  app.post('/trips', controller.createTrip);
+  app.get('/trips/:id', controller.accessTrip);
+  app.get('/trips', controller.getAllTrips);
   // app.delete('/trips', controller.deleteTrip);
 
 }
