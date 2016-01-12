@@ -2,7 +2,7 @@ angular.module('app.trip', ['app.services'])
 
 // ActivitiesData is a factory/service loaded from app.services
 // $routeParams is used to get the trip mongoose _.id
-.controller('TripController', function ($scope, $http, ActivitiesData, $routeParams) {
+.controller('TripController', function ($scope, $http, ActivitiesData, Auth, $routeParams) {
 
   // $scope.id stores the trip mongoose _.id
   $scope.id = $routeParams.id;

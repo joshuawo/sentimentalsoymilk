@@ -134,7 +134,7 @@ angular.module('app.services',[])
 
 
 // this factory is for authentication which is not impemented in the app yet.
-.factory('Auth', function($http, $location){
+.factory('Auth', function($http, $location, $window){
   var auth = {};
   auth.user = { password : '' };
   auth.pass = '';
@@ -147,11 +147,12 @@ angular.module('app.services',[])
 
   auth.login = function(user) {
     return $http.post('/api/login', user)
-      .then(function(result){
+      .then(function(token){
         console.log("Auth Login Hit")
-        if(result.data){
-          console.log("login results", result)
+        if(token.data){
+          console.log("login results", token.data.token)
           console.log("Username", user.username)
+          $window.localStorage.setItem('com.app', token.data.token);
           auth.getUser(user.username)
           .then(function() {
             auth.clearPassword();
@@ -166,11 +167,15 @@ angular.module('app.services',[])
   };
 
   auth.logout = function() {
-    return $http.get('/logout')
-    .then(function(){
-      auth.user = { password : '' };
-      $location.path("/");
-    })
+    console.log("Logout Hit")
+    $window.localStorage.removeItem('com.app');
+    auth.user = { password : '' };
+    $location.path('/');
+    // return $http.get('/logout')
+    // .then(function(){
+    //   auth.user = { password : '' };
+    //   $location.path("/");
+    // })
   },
 
   auth.signup = function(userData) {
@@ -195,6 +200,9 @@ angular.module('app.services',[])
       console.log("Result of getUser", result.data)
       auth.user = result.data;
     })
+  };
+  auth.isAuth = function () {
+    return !!$window.localStorage.getItem('com.app');
   };
 
   auth.getUsersTrips = function(callback) {

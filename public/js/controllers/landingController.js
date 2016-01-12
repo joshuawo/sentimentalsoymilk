@@ -2,7 +2,7 @@ angular.module('app.landing', ['app.services'])
 
 // ActivitiesData a factory/service stored in app.services
 // $location is for redirecting
-.controller('LandingController', function ($scope, $http, ActivitiesData, $location) {
+.controller('LandingController', function ($scope, $http, ActivitiesData, Auth, $location) {
 
   // <h4>ActivitiesData.getTrips()</h4>
   // function that gets all the trips to populate the landing page

@@ -4,6 +4,7 @@ var Trips = require('../models/trips.js');
 var TripItems = require('../models/tripItem.js');
 var request = require('request');
 var bluebird = require('bluebird');
+var jwt = require('jwt-simple');
 
 module.exports = {
   
@@ -59,17 +60,44 @@ module.exports = {
           if(err) console.log("Error comparing password", err)
           console.log("Compare Password", found)
           if (found) {
-            req.session.regenerate(function(){
-            req.session.user = username;
-            res.send(found);
-            });
+            var token = jwt.encode(result, 'secret');
+            res.json({token: token});
+            // req.session.regenerate(function(){
+            // req.session.user = username;
+            // res.send(found);
+            // });
           } else {
-            res.send(found);
+            // res.send(found);
+            return next(new Error('No user'));
           }
         });
 
       }
     });
+  },
+
+  checkAuth: function (req, res, next) {
+    // checking to see if the user is authenticated
+    // grab the token in the header is any
+    // then decode the token, which we end up being the user object
+    // check to see if that user exists in the database
+    var token = req.headers['x-access-token'];
+    if (!token) {
+      next(new Error('No token'));
+    } else {
+      var user = jwt.decode(token, 'secret');
+      User.findOne({username: user.username})
+        .then(function (foundUser) {
+          if (foundUser) {
+            res.send(200);
+          } else {
+            res.send(401);
+          }
+        })
+        .fail(function (error) {
+          next(error);
+        });
+    }
   },
 
   findUser: function(req, res, next) {

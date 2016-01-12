@@ -16,6 +16,7 @@ module.exports = function(app, express) {
  //###### Live but not used in production############
   app.get('/api/user/*', userController.findUser);
   app.put('/api/user/*', userController.addTrips);
+  app.get('/api/users/signedin', userController.checkAuth);
 
   
   //############Pending Routes#####################
