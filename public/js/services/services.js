@@ -100,7 +100,7 @@ angular.module('app.services',[])
       var trip = { trips: [result] };
       console.log("trip", trip)
       return $http.put('/api/user/'+ Auth.user._id, trip, function(result){
-        console.log("Put result", result)
+        console.log("Put result", result);
       })
     })
     .then(function(){
@@ -199,21 +199,24 @@ angular.module('app.services',[])
 
   auth.getUsersTrips = function(callback) {
     console.log("Result from getUserTrips GET", auth.user)
-    user = auth.user;
-    var cache = [];
-    var tripLength = user.trips.length;
-    user.trips.forEach(function(tripId){
-      $http.get('/trips/'+ tripId)
-        .then(function(result){    
-          console.log("Found trip", result.data)
-          console.log('cache',cache)
-          cache.push(result.data);
-          if(tripLength === cache.length){
-            console.log("myTrip:", cache)
-            callback(cache);
-          } 
-        });
-    });
+    auth.getUser(auth.user.username)
+    .then(function(){
+      user = auth.user;
+      var cache = [];
+      var tripLength = user.trips.length;
+      user.trips.forEach(function(tripId){
+        $http.get('/trips/'+ tripId)
+          .then(function(result){    
+            console.log("Found trip", result.data)
+            console.log('cache',cache)
+            cache.push(result.data);
+            if(tripLength === cache.length){
+              console.log("myTrip:", cache)
+              callback(cache);
+            } 
+          });
+      });
+    })
   }
 
   return auth;
